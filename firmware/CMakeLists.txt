@@ -52,6 +52,7 @@ add_subdirectory(${freertos_kernel_SOURCE_DIR} ${CMAKE_BINARY_DIR}/freertos_kern
 
 add_executable(pico_rtos_sensor_hub
     src/main.c
+    src/app_runtime.c
     src/hub_state.c
     src/ring_buffer.c
     src/sensor_source.c
@@ -86,6 +87,13 @@ target_link_libraries(
         hardware_gpio
         freertos_kernel
         m
+)
+
+target_link_options(
+    pico_rtos_sensor_hub
+    PRIVATE
+        -u
+        _printf_float
 )
 
 pico_enable_stdio_usb(pico_rtos_sensor_hub 1)

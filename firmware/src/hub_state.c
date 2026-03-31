@@ -18,6 +18,7 @@ static void set_fault(hub_status_t *status) { status->fault_task_heartbeat++; }
 static void set_queue_overflow(hub_status_t *status) { status->queue_overflows++; }
 static void set_serial_disconnect(hub_status_t *status) { status->serial_disconnects++; }
 static void set_sensor_failure(hub_status_t *status) { status->sensor_failures++; }
+static void set_watchdog_reset(hub_status_t *status) { status->watchdog_resets++; }
 
 void hub_state_init(void) {
     taskENTER_CRITICAL();
@@ -32,6 +33,7 @@ void hub_state_note_fault_heartbeat(void) { hub_state_with_lock(set_fault); }
 void hub_state_increment_queue_overflow(void) { hub_state_with_lock(set_queue_overflow); }
 void hub_state_increment_serial_disconnect(void) { hub_state_with_lock(set_serial_disconnect); }
 void hub_state_increment_sensor_failure(void) { hub_state_with_lock(set_sensor_failure); }
+void hub_state_increment_watchdog_reset(void) { hub_state_with_lock(set_watchdog_reset); }
 
 void hub_state_set_fault_flags(uint32_t flags) {
     taskENTER_CRITICAL();

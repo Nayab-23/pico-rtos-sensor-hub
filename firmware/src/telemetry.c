@@ -19,8 +19,9 @@ int telemetry_format_json(
         buffer_size,
         "{\"seq\":%lu,\"uptime_ms\":%lu,\"sensor\":{\"temperature_c\":%.2f,\"humidity_pct\":%.2f,"
         "\"light_lux\":%.2f,\"voltage_v\":%.3f},\"status\":{\"mock_mode\":%s,\"queue_overflows\":%lu,"
-        "\"sensor_failures\":%lu,\"serial_disconnects\":%lu,\"fault_flags\":%lu},\"buffer\":{\"ring_count\":%u,"
-        "\"queue_depth\":%u}}\n",
+        "\"sensor_failures\":%lu,\"serial_disconnects\":%lu,\"watchdog_resets\":%lu,\"fault_flags\":%lu,"
+        "\"heartbeats\":{\"sensor\":%lu,\"telemetry\":%lu,\"heartbeat\":%lu,\"fault\":%lu}},"
+        "\"buffer\":{\"ring_count\":%u,\"queue_depth\":%u}}\n",
         (unsigned long)sample->sequence,
         (unsigned long)sample->uptime_ms,
         (double)sample->temperature_c,
@@ -31,7 +32,12 @@ int telemetry_format_json(
         (unsigned long)status->queue_overflows,
         (unsigned long)status->sensor_failures,
         (unsigned long)status->serial_disconnects,
+        (unsigned long)status->watchdog_resets,
         (unsigned long)status->last_fault_flags,
+        (unsigned long)status->sensor_task_heartbeat,
+        (unsigned long)status->telemetry_task_heartbeat,
+        (unsigned long)status->heartbeat_task_heartbeat,
+        (unsigned long)status->fault_task_heartbeat,
         (unsigned int)ring_count,
         (unsigned int)queue_depth
     );

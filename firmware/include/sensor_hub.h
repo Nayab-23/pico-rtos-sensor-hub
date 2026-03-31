@@ -5,6 +5,30 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#ifndef SENSOR_HUB_USE_MOCK_SENSORS
+#define SENSOR_HUB_USE_MOCK_SENSORS 1
+#endif
+
+#ifndef SENSOR_HUB_ENABLE_WATCHDOG
+#define SENSOR_HUB_ENABLE_WATCHDOG 0
+#endif
+
+#ifndef SENSOR_HUB_SAMPLE_RATE_HZ
+#define SENSOR_HUB_SAMPLE_RATE_HZ 10
+#endif
+
+#ifndef SENSOR_HUB_TELEMETRY_INTERVAL_MS
+#define SENSOR_HUB_TELEMETRY_INTERVAL_MS 500
+#endif
+
+#ifndef SENSOR_HUB_QUEUE_LENGTH
+#define SENSOR_HUB_QUEUE_LENGTH 16
+#endif
+
+#ifndef SENSOR_HUB_RING_CAPACITY
+#define SENSOR_HUB_RING_CAPACITY 64
+#endif
+
 typedef struct {
     uint32_t sequence;
     uint32_t uptime_ms;
