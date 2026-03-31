@@ -2,6 +2,8 @@
 
 `pico-rtos-sensor-hub` is a firmware-oriented embedded project that uses the Raspberry Pi as the development host for a Raspberry Pi Pico or Pico W telemetry hub.
 
+The project is intentionally simulator-first on the Raspberry Pi. Host-side telemetry tooling, protocol validation, persistence, and dashboard workflows are treated as the default success path. Firmware toolchain installation and UF2 builds are documented and supported, but they are now explicitly optional and deferred when they would consume too much time on the Pi.
+
 ## Chosen Stack
 
 - Firmware: Pico SDK + FreeRTOS
@@ -37,9 +39,8 @@ If no Pico or Pico W is attached:
 ## Quick Start
 
 ```bash
-./scripts/setup_host_tools.sh
-./scripts/detect_pico.py
-./scripts/run_monitor.sh --mode auto
+./scripts/bootstrap_pi.sh
+./scripts/run_simulator_validation.sh
 ```
 
 On this Raspberry Pi host, no Pico was detected during initial setup on March 30, 2026, so the project is configured to be immediately useful in simulator mode while keeping the firmware build and flash path ready for real hardware.
@@ -68,10 +69,12 @@ On this Raspberry Pi host, no Pico was detected during initial setup on March 30
 
 ## Firmware Build
 
-Install dependencies on the Raspberry Pi first:
+Heavy firmware toolchain provisioning is intentionally deferred by default.
+
+Host-side validation does **not** require the ARM cross toolchain. If and when you want a real UF2 build path on the Pi, install the optional firmware toolchain:
 
 ```bash
-./scripts/bootstrap_pi.sh
+./scripts/install_firmware_toolchain.sh
 ```
 
 Build the UF2 artifact:
@@ -114,6 +117,12 @@ Force simulator mode for demos and tests:
 ./scripts/run_monitor.sh --mode simulator --max-messages 20
 ```
 
+One-command host-side validation on the Pi:
+
+```bash
+./scripts/run_simulator_validation.sh
+```
+
 Launch the local dashboard:
 
 ```bash
@@ -125,6 +134,7 @@ Open `http://<pi-ip>:8081/` to review the latest samples, fault history, and hos
 ## Documentation
 
 - `docs/architecture.md`
+- `docs/build_host_strategy.md`
 - `docs/rtos_design.md`
 - `docs/host_integration.md`
 - `docs/hardware_matrix.md`

@@ -1,12 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Install the Raspberry Pi packages needed for cross-building and host tooling.
+# Install only the lightweight Raspberry Pi packages needed for host-side tooling.
+# Heavy firmware toolchain packages are intentionally deferred to
+# ./scripts/install_firmware_toolchain.sh so they do not block daily work.
 PACKAGES=(
-  cmake
-  gcc-arm-none-eabi
-  libnewlib-arm-none-eabi
-  ninja-build
   python3-pip
   python3-venv
 )
@@ -14,5 +12,6 @@ PACKAGES=(
 sudo apt-get update
 sudo apt-get install -y "${PACKAGES[@]}"
 
-echo "Base Raspberry Pi dependencies installed."
-echo "Next: ./scripts/setup_host_tools.sh"
+echo "Lightweight host dependencies installed."
+echo "Next: ./scripts/run_simulator_validation.sh"
+echo "Optional later step for real firmware builds: ./scripts/install_firmware_toolchain.sh"

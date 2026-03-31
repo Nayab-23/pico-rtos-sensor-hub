@@ -4,7 +4,7 @@ PIP := $(VENV)/bin/pip
 PYTHON_BIN := $(VENV)/bin/python
 PYTEST := $(VENV)/bin/pytest
 
-.PHONY: host-install host-test detect-pico host-monitor host-simulator host-dashboard build-firmware
+.PHONY: host-install host-test validate-host detect-pico host-monitor host-simulator host-dashboard build-firmware install-firmware-toolchain
 
 host-install:
 	$(PYTHON) -m venv $(VENV)
@@ -13,6 +13,9 @@ host-install:
 
 host-test: host-install
 	$(PYTEST) tests
+
+validate-host:
+	./scripts/run_simulator_validation.sh
 
 detect-pico: host-install
 	$(PYTHON_BIN) scripts/detect_pico.py
@@ -28,3 +31,6 @@ host-dashboard: host-install
 
 build-firmware:
 	./scripts/build_firmware.sh
+
+install-firmware-toolchain:
+	./scripts/install_firmware_toolchain.sh
