@@ -16,4 +16,5 @@ dist/
 *.bin
 *.map
 *.log
-host_tools/data/
+*.db
+runtime/
