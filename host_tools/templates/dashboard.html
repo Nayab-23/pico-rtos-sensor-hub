@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="refresh" content="3">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Pico RTOS Sensor Hub</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f5f2eb;
+        --panel: #fffdf8;
+        --ink: #1f2933;
+        --accent: #2b6cb0;
+        --warn: #c05621;
+        --muted: #6b7280;
+        --border: #d6d3cb;
+      }
+      body {
+        margin: 0;
+        font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+        background: radial-gradient(circle at top left, #fff8ea, var(--bg) 42%);
+        color: var(--ink);
+      }
+      main {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 32px 20px 48px;
+      }
+      h1, h2 {
+        margin: 0 0 12px;
+      }
+      .grid {
+        display: grid;
+        gap: 16px;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      }
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 18px;
+        box-shadow: 0 10px 30px rgba(31, 41, 51, 0.06);
+      }
+      .metric {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--accent);
+      }
+      .muted {
+        color: var(--muted);
+      }
+      .fault {
+        color: var(--warn);
+        font-weight: 700;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.95rem;
+      }
+      th, td {
+        padding: 10px 8px;
+        border-bottom: 1px solid var(--border);
+        text-align: left;
+      }
+      th {
+        color: var(--muted);
+        font-size: 0.82rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+      code {
+        font-family: "IBM Plex Mono", monospace;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="panel">
+        <h1>Pico RTOS Sensor Hub</h1>
+        <p class="muted">Auto-refreshing dashboard backed by the host-side SQLite telemetry log.</p>
+      </section>
+
+      <section class="grid" style="margin-top: 16px;">
+        <article class="panel">
+          <h2>Sample Count</h2>
+          <div class="metric">{{ summary.sample_count }}</div>
+        </article>
+        <article class="panel">
+          <h2>Faulted Samples</h2>
+          <div class="metric {% if summary.faulted_samples %}fault{% endif %}">{{ summary.faulted_samples }}</div>
+        </article>
+        <article class="panel">
+          <h2>Peak Temperature</h2>
+          <div class="metric">{{ "%.2f"|format(summary.max_temp_c) }} C</div>
+        </article>
+      </section>
+
+      <section class="panel" style="margin-top: 16px;">
+        <h2>Latest Sample</h2>
+        {% if summary.latest %}
+        <p>
+          <strong>Source:</strong> <code>{{ summary.latest.source_mode }}</code>
+          <strong style="margin-left: 16px;">Sequence:</strong> <code>{{ summary.latest.sequence }}</code>
+          <strong style="margin-left: 16px;">Fault Flags:</strong>
+          <span class="{% if summary.latest.fault_flags %}fault{% endif %}"><code>0x{{ "%x"|format(summary.latest.fault_flags) }}</code></span>
+        </p>
+        <p class="muted">Recorded at {{ summary.latest.received_at }}</p>
+        {% else %}
+        <p class="muted">No telemetry recorded yet.</p>
+        {% endif %}
+      </section>
+
+      <section class="panel" style="margin-top: 16px;">
+        <h2>Recent Samples</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Seq</th>
+              <th>Mode</th>
+              <th>Temp C</th>
+              <th>Humidity %</th>
+              <th>Light lx</th>
+              <th>Voltage V</th>
+              <th>Faults</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for sample in recent_samples %}
+            <tr>
+              <td><code>{{ sample.sequence }}</code></td>
+              <td>{{ sample.source_mode }}</td>
+              <td>{{ "%.2f"|format(sample.temperature_c) }}</td>
+              <td>{{ "%.2f"|format(sample.humidity_pct) }}</td>
+              <td>{{ "%.2f"|format(sample.light_lux) }}</td>
+              <td>{{ "%.3f"|format(sample.voltage_v) }}</td>
+              <td class="{% if sample.fault_flags %}fault{% endif %}"><code>0x{{ "%x"|format(sample.fault_flags) }}</code></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </section>
+
+      <section class="panel" style="margin-top: 16px;">
+        <h2>Recent Host Events</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Level</th>
+              <th>Message</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for event in recent_events %}
+            <tr>
+              <td><code>{{ event.created_at }}</code></td>
+              <td>{{ event.level }}</td>
+              <td>{{ event.message }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </section>
+    </main>
+  </body>
+</html>
