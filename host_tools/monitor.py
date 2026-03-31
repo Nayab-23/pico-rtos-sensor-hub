@@ -160,11 +160,12 @@ def main() -> int:
 
     if source_mode == "simulator":
         LOGGER.info("running in simulator mode because no Pico serial device is attached")
-        return run_simulator_loop(store, telemetry_logger, args)
+        run_simulator_loop(store, telemetry_logger, args)
+        return 0
 
     while True:
         try:
-            return run_serial_loop(
+            run_serial_loop(
                 store=store,
                 telemetry_logger=telemetry_logger,
                 port=port or "",
@@ -172,6 +173,7 @@ def main() -> int:
                 max_retained_samples=args.max_retained_samples,
                 max_messages=args.max_messages,
             )
+            return 0
         except (serial.SerialException, OSError) as exc:
             LOGGER.warning("serial connection failed: %s", exc)
             store.record_event("warning", "serial_disconnected", {"port": port, "error": str(exc)})
@@ -181,7 +183,8 @@ def main() -> int:
             devices = detect_pico_serial_devices()
             if not devices:
                 LOGGER.info("no Pico detected after disconnect, switching to simulator mode")
-                return run_simulator_loop(store, telemetry_logger, args)
+                run_simulator_loop(store, telemetry_logger, args)
+                return 0
             port = devices[0].device
 
 
